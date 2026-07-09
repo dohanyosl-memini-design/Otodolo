@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ötödölő – Amőba</title>
+  <meta name="description" content="Ötödölő (amőba / gomoku): két játékos, öt egy sorban. Böngészőben, felváltva." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭕</text></svg>" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <h1 class="logo">Ötödölő <span>amőba</span></h1>
+      <div class="controls">
+        <label class="field">
+          <span>Tábla</span>
+          <select id="sizeSelect">
+            <option value="15" selected>15 × 15</option>
+            <option value="19">19 × 19</option>
+            <option value="20">20 × 20</option>
+          </select>
+        </label>
+        <button id="undoBtn" class="btn ghost" type="button" title="Utolsó lépés visszavonása">↶ Vissza</button>
+        <button id="newRoundBtn" class="btn" type="button">Új játszma</button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="board-wrap">
+        <div id="board" class="board" role="grid" aria-label="Játéktábla"></div>
+      </section>
+
+      <aside class="sidebar">
+        <div class="scoreboard">
+          <div class="player player-x" id="cardX">
+            <div class="mark">✕</div>
+            <div class="meta">
+              <input class="name" id="nameX" value="Játékos 1" maxlength="16" aria-label="Első játékos neve" />
+              <div class="score" id="scoreX">0</div>
+            </div>
+          </div>
+          <div class="vs">vs</div>
+          <div class="player player-o" id="cardO">
+            <div class="mark">◯</div>
+            <div class="meta">
+              <input class="name" id="nameO" value="Játékos 2" maxlength="16" aria-label="Második játékos neve" />
+              <div class="score" id="scoreO">0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="status" id="status">Kezd: <strong>Játékos 1</strong> (✕)</div>
+
+        <div class="rules">
+          <h2>Szabályok</h2>
+          <ul>
+            <li>Két játékos felváltva rakja a jelét (✕ és ◯).</li>
+            <li>Aki előbb tesz össze <strong>ötöt egy sorban</strong> — vízszintesen, függőlegesen vagy átlósan —, az nyer.</li>
+            <li>A győztes vonal kiemelődik.</li>
+          </ul>
+          <button id="resetScoreBtn" class="btn ghost small" type="button">Eredmény nullázása</button>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <div class="overlay" id="overlay" hidden>
+    <div class="modal">
+      <div class="modal-mark" id="modalMark">✕</div>
+      <h2 id="modalTitle">Győzelem!</h2>
+      <p id="modalText">Játékos 1 nyert.</p>
+      <button id="modalBtn" class="btn" type="button">Új játszma</button>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
