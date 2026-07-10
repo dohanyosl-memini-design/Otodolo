@@ -82,6 +82,7 @@ select {
 /* Layout — mobile first: info, then board, then rules */
 .layout { display: flex; flex-direction: column; gap: 16px; }
 .topinfo { display: flex; flex-direction: column; gap: 12px; }
+.score-actions { display: flex; justify-content: flex-end; }
 
 .board-wrap {
   background: var(--panel);

@@ -7,7 +7,6 @@ const WIN_LENGTH = 5;
 
 const el = {
   board: document.getElementById("board"),
-  status: document.getElementById("status"),
   sizeSelect: document.getElementById("sizeSelect"),
   undoBtn: document.getElementById("undoBtn"),
   newRoundBtn: document.getElementById("newRoundBtn"),
@@ -147,14 +146,12 @@ function endRound(winner, line) {
       drawWinLine(line, winner);
     }
     const name = nameOf(winner);
-    el.status.innerHTML = `<strong>${escapeHtml(name)}</strong> nyert! 🎉`;
     // Előbb a vonal látszik, csak 3 mp múlva ugrik fel a győztes ablak.
     state.winTimer = setTimeout(() => {
       state.winTimer = null;
       showModal(winner, `${name} nyert!`, "Győzelem!");
     }, WIN_DELAY_MS);
   } else {
-    el.status.textContent = "Döntetlen – megtelt a tábla.";
     state.winTimer = setTimeout(() => {
       state.winTimer = null;
       showModal(null, "Nem fért el több jel a táblán.", "Döntetlen");
@@ -213,7 +210,6 @@ function updateTurnUI() {
   el.board.classList.toggle("turn-o", state.current === "O");
   el.cardX.classList.toggle("active", state.current === "X");
   el.cardO.classList.toggle("active", state.current === "O");
-  el.status.innerHTML = `Következik: <strong>${escapeHtml(nameOf(state.current))}</strong> (${MARKS[state.current]})`;
 }
 
 function undo() {
