@@ -47,7 +47,7 @@ function buildBoard(size) {
   state.moves = [];
   state.over = false;
 
-  el.board.style.gridTemplateColumns = `repeat(${size}, 1fr)`;
+  el.board.style.setProperty("--n", String(size));
   el.board.innerHTML = "";
 
   const frag = document.createDocumentFragment();

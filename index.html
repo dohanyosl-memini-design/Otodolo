@@ -2,10 +2,10 @@
 <html lang="hu">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f1220" />
   <title>Ötödölő – Amőba</title>
   <meta name="description" content="Ötödölő (amőba / gomoku): két játékos, öt egy sorban. Böngészőben, felváltva." />
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="style.css" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⭕</text></svg>" />
 </head>
@@ -28,11 +28,7 @@
     </header>
 
     <main class="layout">
-      <section class="board-wrap">
-        <div id="board" class="board" role="grid" aria-label="Játéktábla"></div>
-      </section>
-
-      <aside class="sidebar">
+      <div class="topinfo">
         <div class="scoreboard">
           <div class="player player-x" id="cardX">
             <div class="mark">✕</div>
@@ -50,9 +46,14 @@
             </div>
           </div>
         </div>
-
         <div class="status" id="status">Kezd: <strong>Játékos 1</strong> (✕)</div>
+      </div>
 
+      <section class="board-wrap">
+        <div id="board" class="board" role="grid" aria-label="Játéktábla"></div>
+      </section>
+
+      <aside class="sidebar">
         <div class="rules">
           <h2>Szabályok</h2>
           <ul>
