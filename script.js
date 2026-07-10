@@ -34,13 +34,24 @@ const state = {
   moves: [],          // lépés-index history az undóhoz
   over: false,
   scores: { X: 0, O: 0 },
+  winTimer: null,     // a 3 mp-es késleltetés a győztes ablak előtt
 };
+
+const WIN_DELAY_MS = 3000; // ennyit várunk a vonal után, mielőtt feljön a győztes ablak
+
+function clearWinTimer() {
+  if (state.winTimer) {
+    clearTimeout(state.winTimer);
+    state.winTimer = null;
+  }
+}
 
 function nameOf(player) {
   return (player === "X" ? el.nameX.value : el.nameO.value).trim() || (player === "X" ? "Játékos 1" : "Játékos 2");
 }
 
 function buildBoard(size) {
+  clearWinTimer();
   state.size = size;
   state.cells = new Array(size * size).fill(null);
   state.current = "X";
@@ -48,7 +59,7 @@ function buildBoard(size) {
   state.over = false;
 
   el.board.style.setProperty("--n", String(size));
-  el.board.innerHTML = "";
+  el.board.innerHTML = ""; // ez a győztes vonalat (SVG) is eltávolítja
 
   const frag = document.createDocumentFragment();
   for (let i = 0; i < size * size; i++) {
@@ -133,16 +144,68 @@ function endRound(winner, line) {
       for (const idx of line) {
         el.board.children[idx].classList.add("win");
       }
+      drawWinLine(line, winner);
     }
     const name = nameOf(winner);
     el.status.innerHTML = `<strong>${escapeHtml(name)}</strong> nyert! 🎉`;
-    showModal(winner, `${name} nyert!`, "Győzelem!");
+    // Előbb a vonal látszik, csak 3 mp múlva ugrik fel a győztes ablak.
+    state.winTimer = setTimeout(() => {
+      state.winTimer = null;
+      showModal(winner, `${name} nyert!`, "Győzelem!");
+    }, WIN_DELAY_MS);
   } else {
     el.status.textContent = "Döntetlen – megtelt a tábla.";
-    showModal(null, "Nem fért el több jel a táblán.", "Döntetlen");
+    state.winTimer = setTimeout(() => {
+      state.winTimer = null;
+      showModal(null, "Nem fért el több jel a táblán.", "Döntetlen");
+    }, WIN_DELAY_MS);
   }
   el.cardX.classList.remove("active");
   el.cardO.classList.remove("active");
+}
+
+// Egy vonalat húz az 5 nyerő jelen keresztül, kirajzolódó animációval.
+function drawWinLine(line, winner) {
+  const first = el.board.children[line[0]];
+  const last = el.board.children[line[line.length - 1]];
+  if (!first || !last) return;
+
+  const b = el.board.getBoundingClientRect();
+  const f = first.getBoundingClientRect();
+  const l = last.getBoundingClientRect();
+  const x1 = f.left + f.width / 2 - b.left;
+  const y1 = f.top + f.height / 2 - b.top;
+  const x2 = l.left + l.width / 2 - b.left;
+  const y2 = l.top + l.height / 2 - b.top;
+
+  const W = el.board.clientWidth;
+  const H = el.board.clientHeight;
+  const strokeW = Math.max(3, f.width * 0.18);
+  const NS = "http://www.w3.org/2000/svg";
+
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("class", "winline");
+  svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+  svg.setAttribute("preserveAspectRatio", "none");
+
+  const ln = document.createElementNS(NS, "line");
+  ln.setAttribute("x1", x1);
+  ln.setAttribute("y1", y1);
+  ln.setAttribute("x2", x2);
+  ln.setAttribute("y2", y2);
+  ln.setAttribute("stroke-width", strokeW);
+  const color = winner === "X" ? "var(--x)" : "var(--o)";
+  ln.style.stroke = color;
+
+  const len = Math.hypot(x2 - x1, y2 - y1);
+  ln.style.strokeDasharray = String(len);
+  ln.style.strokeDashoffset = String(len);
+
+  svg.appendChild(ln);
+  el.board.appendChild(svg);
+
+  // A következő frame-ben indul a kirajzolódás (CSS transition).
+  requestAnimationFrame(() => { ln.style.strokeDashoffset = "0"; });
 }
 
 function updateTurnUI() {
@@ -165,12 +228,14 @@ function undo() {
   cell.classList.remove("x", "o");
 
   if (wasOver) {
-    // győzelem visszavonása: pont vissza, kiemelés törlése, folytatható a játszma
+    // győzelem visszavonása: pont vissza, kiemelés + vonal törlése, folytatható a játszma
+    clearWinTimer();
     if (player) {
       state.scores[player] = Math.max(0, state.scores[player] - 1);
       (player === "X" ? el.scoreX : el.scoreO).textContent = String(state.scores[player]);
     }
     for (const c of el.board.querySelectorAll(".cell.win")) c.classList.remove("win");
+    for (const s of el.board.querySelectorAll(".winline")) s.remove();
     el.board.classList.remove("locked");
     state.over = false;
     hideModal();

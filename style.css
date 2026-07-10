@@ -95,6 +95,7 @@ select {
 
 /* Board always fits the screen (square, capped by the smaller viewport side) */
 .board {
+  position: relative;
   container-type: inline-size;
   display: grid;
   grid-template-columns: repeat(var(--n, 15), 1fr);
@@ -131,6 +132,23 @@ select {
 .cell.x { color: var(--x); }
 .cell.o { color: var(--o); }
 .cell.win { background: rgba(255, 209, 102, 0.2); box-shadow: inset 0 0 0 2px var(--win); }
+
+/* Winning line drawn across the 5 marks */
+.winline {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+  z-index: 3;
+}
+.winline line {
+  stroke: var(--win);
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px rgba(255, 209, 102, 0.75));
+  transition: stroke-dashoffset 0.5s ease-out;
+}
 
 /* Hover preview only for real pointer devices (not touch) */
 @media (hover: hover) and (pointer: fine) {
